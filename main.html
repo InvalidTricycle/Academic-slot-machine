@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学术炼金术士 | The Academic Alchemist</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: #f0f4f8;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .slot-window {
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 20%, #e2e8f0 80%, #f8fafc 100%);
+        }
+        .mono-font {
+            font-family: 'Roboto Mono', monospace;
+        }
+        @keyframes spin {
+            0% { transform: translateY(-2px); }
+            100% { transform: translateY(2px); }
+        }
+        .spinning-text {
+            filter: blur(1px);
+            animation: spin 0.1s infinite alternate;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // 数据库：左边是常见的“神药”成分，右边是常见疾病
+        // 包含了中英文对照，方便生成检索式
+        const substances = [
+            { cn: "大蒜提取物", en: "Garlic Extract", keyword: "Garlic" },
+            { cn: "姜黄素", en: "Curcumin", keyword: "Curcumin" },
+            { cn: "绿茶多酚", en: "Green Tea Polyphenols", keyword: "Green Tea" },
+            { cn: "白藜芦醇", en: "Resveratrol", keyword: "Resveratrol" },
+            { cn: "维生素C", en: "Vitamin C", keyword: "Ascorbic Acid" },
+            { cn: "益生菌", en: "Probiotics", keyword: "Probiotics" },
+            { cn: "二甲双胍", en: "Metformin", keyword: "Metformin" },
+            { cn: "咖啡因", en: "Caffeine", keyword: "Caffeine" },
+            { cn: "纳豆激酶", en: "Nattokinase", keyword: "Nattokinase" },
+            { cn: "冬虫夏草", en: "Cordyceps", keyword: "Cordyceps" },
+            { cn: "辅酶Q10", en: "Coenzyme Q10", keyword: "Coenzyme Q10" },
+            { cn: "阿司匹林", en: "Aspirin", keyword: "Aspirin" },
+            { cn: "生酮饮食", en: "Ketogenic Diet", keyword: "Ketogenic Diet" },
+            { cn: "氢气", en: "Molecular Hydrogen", keyword: "Hydrogen Gas" },
+            { cn: "褪黑素", en: "Melatonin", keyword: "Melatonin" }
+        ];
+
+        const diseases = [
+            { cn: "新冠肺炎", en: "COVID-19", keyword: "COVID-19" },
+            { cn: "癌症", en: "Cancer", keyword: "Neoplasms" },
+            { cn: "阿尔茨海默症", en: "Alzheimer's", keyword: "Alzheimer Disease" },
+            { cn: "抑郁症", en: "Depression", keyword: "Depression" },
+            { cn: "2型糖尿病", en: "Type 2 Diabetes", keyword: "Diabetes Mellitus, Type 2" },
+            { cn: "肥胖", en: "Obesity", keyword: "Obesity" },
+            { cn: "衰老", en: "Aging", keyword: "Aging" },
+            { cn: "高血压", en: "Hypertension", keyword: "Hypertension" },
+            { cn: "自闭症", en: "Autism", keyword: "Autism Spectrum Disorder" },
+            { cn: "肠易激综合征", en: "IBS", keyword: "Irritable Bowel Syndrome" },
+            { cn: "勃起功能障碍", en: "Erectile Dysfunction", keyword: "Erectile Dysfunction" },
+            { cn: "脱发", en: "Hair Loss", keyword: "Alopecia" },
+            { cn: "失眠", en: "Insomnia", keyword: "Sleep Initiation and Maintenance Disorders" },
+            { cn: "炎症风暴", en: "Cytokine Storm", keyword: "Cytokine Release Syndrome" }
+        ];
+
+        const loadingPhrases = [
+            "正在进行P值操纵...",
+            "正在剔除异常数据点...",
+            "正在寻找显著性差异...",
+            "正在联系掠夺性期刊...",
+            "正在为了毕业拼凑数据...",
+            "正在绘制精美的柱状图...",
+            "相关性就是因果性...",
+            "正在忽视混杂因素...",
+            "正在进行事后分析..."
+        ];
+
+        const App = () => {
+            const [leftIndex, setLeftIndex] = useState(0);
+            const [rightIndex, setRightIndex] = useState(0);
+            const [isSpinning, setIsSpinning] = useState(false);
+            const [result, setResult] = useState(null);
+            const [loadingText, setLoadingText] = useState("");
+
+            const spin = () => {
+                if (isSpinning) return;
+                
+                setIsSpinning(true);
+                setResult(null);
+                
+                let spins = 0;
+                const maxSpins = 20; // 视觉上的跳动次数
+                const intervalId = setInterval(() => {
+                    setLeftIndex(Math.floor(Math.random() * substances.length));
+                    setRightIndex(Math.floor(Math.random() * diseases.length));
+                    setLoadingText(loadingPhrases[Math.floor(Math.random() * loadingPhrases.length)]);
+                    
+                    spins++;
+                    if (spins >= maxSpins) {
+                        clearInterval(intervalId);
+                        setIsSpinning(false);
+                        generateResult();
+                    }
+                }, 100);
+            };
+
+            const generateResult = () => {
+                // 实际上最后的结果也是随机确定的，确保随机性
+                const finalLeft = Math.floor(Math.random() * substances.length);
+                const finalRight = Math.floor(Math.random() * diseases.length);
+                
+                setLeftIndex(finalLeft);
+                setRightIndex(finalRight);
+
+                const sub = substances[finalLeft];
+                const dis = diseases[finalRight];
+
+                // 构建 PubMed 检索式
+                // 使用 Title/Abstract 限制，确保相关性看起来比较强，增加讽刺效果
+                const query = `("${sub.keyword}"[Title/Abstract]) AND ("${dis.keyword}"[Title/Abstract])`;
+                const url = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(query)}&sort=date`;
+
+                setResult({
+                    sub: sub,
+                    dis: dis,
+                    query: query,
+                    url: url
+                });
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-10 px-4 max-w-3xl mx-auto">
+                    {/* Header */}
+                    <header className="text-center mb-10">
+                        <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-2">学术炼金术生成器</h1>
+                        <p className="text-slate-600 italic text-lg">"只要你敢搜，我就敢有论文。"</p>
+                        <div className="mt-2 inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm border border-yellow-300">
+                            ⚠️ 警告：本页面纯属讽刺，请勿用于医疗建议
+                        </div>
+                    </header>
+
+                    {/* Machine Interface */}
+                    <div className="bg-slate-800 p-4 rounded-xl shadow-2xl w-full border-4 border-slate-600">
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            
+                            {/* Left Wheel: Substances */}
+                            <div className="flex-1">
+                                <div className="text-center text-slate-300 mb-2 text-sm tracking-widest uppercase">神奇成分 (Input)</div>
+                                <div className="slot-window h-32 md:h-40 rounded-lg flex items-center justify-center border-4 border-slate-500 bg-white overflow-hidden relative">
+                                    <div className={`text-2xl md:text-3xl font-bold text-slate-800 text-center px-2 ${isSpinning ? 'spinning-text' : ''}`}>
+                                        {substances[leftIndex].cn}
+                                        <div className="text-sm text-slate-500 font-normal mt-1 mono-font">
+                                            {substances[leftIndex].en}
+                                        </div>
+                                    </div>
+                                    {/* Decorative gradient overlay for 3D effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none"></div>
+                                </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="flex items-center justify-center">
+                                <span className="text-3xl md:text-4xl text-white font-bold">×</span>
+                            </div>
+
+                            {/* Right Wheel: Diseases */}
+                            <div className="flex-1">
+                                <div className="text-center text-slate-300 mb-2 text-sm tracking-widest uppercase">重大疾病 (Target)</div>
+                                <div className="slot-window h-32 md:h-40 rounded-lg flex items-center justify-center border-4 border-slate-500 bg-white overflow-hidden relative">
+                                    <div className={`text-2xl md:text-3xl font-bold text-red-700 text-center px-2 ${isSpinning ? 'spinning-text' : ''}`}>
+                                        {diseases[rightIndex].cn}
+                                        <div className="text-sm text-red-400 font-normal mt-1 mono-font">
+                                            {diseases[rightIndex].en}
+                                        </div>
+                                    </div>
+                                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Control Panel */}
+                        <div className="flex flex-col items-center justify-center gap-4">
+                            <button 
+                                onClick={spin} 
+                                disabled={isSpinning}
+                                className={`
+                                    w-full md:w-auto px-8 py-4 rounded-lg font-bold text-xl transition-all transform active:scale-95
+                                    shadow-[0_4px_0_rgb(0,0,0,0.4)] active:shadow-none active:translate-y-1
+                                    ${isSpinning 
+                                        ? 'bg-slate-500 text-slate-300 cursor-not-allowed' 
+                                        : 'bg-emerald-500 hover:bg-emerald-400 text-white border-b-4 border-emerald-700'}
+                                `}
+                            >
+                                {isSpinning ? loadingText : "开始“科研” (GENERATE HYPOTHESIS)"}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Result Section */}
+                    {result && !isSpinning && (
+                        <div className="mt-8 w-full animate-[fadeIn_0.5s_ease-out]">
+                            <div className="bg-white border border-slate-200 rounded-lg shadow-lg p-6 md:p-8 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+                                
+                                <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                    <span>🎉</span> 恭喜！您发现了一个潜在的诺贝尔奖课题：
+                                </h2>
+                                
+                                <div className="bg-slate-50 p-4 rounded border border-slate-200 mb-6">
+                                    <p className="text-lg md:text-xl text-center font-serif text-slate-700 leading-relaxed">
+                                        “我们观察到 
+                                        <span className="font-bold text-emerald-600 mx-2">{result.sub.cn}</span> 
+                                        在体外实验/观测研究中显示出对 
+                                        <span className="font-bold text-red-600 mx-2">{result.dis.cn}</span> 
+                                        的潜在治疗/预防作用。”
+                                    </p>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="text-sm text-slate-500 mono-font bg-slate-100 p-2 rounded overflow-x-auto whitespace-nowrap">
+                                        Query: {result.query}
+                                    </div>
+                                    
+                                    <a 
+                                        href={result.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                        在 PubMed 上查看“科学证据”
+                                    </a>
+                                    
+                                    <p className="text-xs text-center text-slate-400 mt-2">
+                                        注：如果搜索结果为 0，说明这是一个“完全未被探索的处女地”，更值得发表！(或者换个更模糊的词再搜一次)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Footer Explaination */}
+                    <div className="mt-16 text-slate-500 text-sm max-w-2xl leading-relaxed border-t pt-6 border-slate-200">
+                        <h3 className="font-bold text-slate-700 mb-2">为什么这个页面存在？</h3>
+                        <p>
+                            这讽刺了当今科研出版界的一种现象：大量的<b>“炒菜式科研”</b>。研究者通过排列组合不同的成分和疾病，利用统计学工具（P-Hacking）在海量数据中寻找微弱的相关性，或者在培养皿里用致死剂量的提取物杀死癌细胞/病毒。
+                        </p>
+                        <p className="mt-2">
+                            这些研究往往虽然通过了同行评审，但临床意义极低。然而，它们一旦进入大众视野，就变成了“科学家发现XX能治XX”，引发不必要的恐慌或抢购潮。
+                        </p>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
