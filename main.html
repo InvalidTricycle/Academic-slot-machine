@@ -40,40 +40,40 @@
         const { useState, useEffect } = React;
 
         // 数据库：左边是常见的“神药”成分，右边是常见疾病
-        // 包含了中英文对照，方便生成检索式
+        // 现在使用 keywords 数组来存储多个同义检索词
         const substances = [
-            { cn: "大蒜提取物", en: "Garlic Extract", keyword: "Garlic" },
-            { cn: "姜黄素", en: "Curcumin", keyword: "Curcumin" },
-            { cn: "绿茶多酚", en: "Green Tea Polyphenols", keyword: "Green Tea" },
-            { cn: "白藜芦醇", en: "Resveratrol", keyword: "Resveratrol" },
-            { cn: "维生素C", en: "Vitamin C", keyword: "Ascorbic Acid" },
-            { cn: "益生菌", en: "Probiotics", keyword: "Probiotics" },
-            { cn: "二甲双胍", en: "Metformin", keyword: "Metformin" },
-            { cn: "咖啡因", en: "Caffeine", keyword: "Caffeine" },
-            { cn: "纳豆激酶", en: "Nattokinase", keyword: "Nattokinase" },
-            { cn: "冬虫夏草", en: "Cordyceps", keyword: "Cordyceps" },
-            { cn: "辅酶Q10", en: "Coenzyme Q10", keyword: "Coenzyme Q10" },
-            { cn: "阿司匹林", en: "Aspirin", keyword: "Aspirin" },
-            { cn: "生酮饮食", en: "Ketogenic Diet", keyword: "Ketogenic Diet" },
-            { cn: "氢气", en: "Molecular Hydrogen", keyword: "Hydrogen Gas" },
-            { cn: "褪黑素", en: "Melatonin", keyword: "Melatonin" }
+            { cn: "大蒜提取物", en: "Garlic Extract", keywords: ["Garlic", "Allium Sativum"] },
+            { cn: "姜黄素", en: "Curcumin", keywords: ["Curcumin", "Turmeric", "Diferuloylmethane"] },
+            { cn: "绿茶多酚", en: "Green Tea Polyphenols", keywords: ["Green Tea", "EGCG", "Catechins"] },
+            { cn: "白藜芦醇", en: "Resveratrol", keywords: ["Resveratrol", "Stilbenes"] },
+            { cn: "维生素C", en: "Vitamin C", keywords: ["Ascorbic Acid", "Vitamin C", "L-ascorbic acid"] },
+            { cn: "益生菌", en: "Probiotics", keywords: ["Probiotics", "Microbiota", "Gut Flora", "Lactobacillus"] },
+            { cn: "二甲双胍", en: "Metformin", keywords: ["Metformin", "Glucophage"] },
+            { cn: "咖啡因", en: "Caffeine", keywords: ["Caffeine", "Coffee", "Theine"] },
+            { cn: "纳豆激酶", en: "Nattokinase", keywords: ["Nattokinase", "Bacillus Subtilis"] },
+            { cn: "冬虫夏草", en: "Cordyceps", keywords: ["Cordyceps", "Mushroom Extract"] },
+            { cn: "辅酶Q10", en: "Coenzyme Q10", keywords: ["Coenzyme Q10", "Ubiquinone"] },
+            { cn: "阿司匹林", en: "Aspirin", keywords: ["Aspirin", "Acetylsalicylic Acid", "NSAIDs"] },
+            { cn: "生酮饮食", en: "Ketogenic Diet", keywords: ["Ketogenic Diet", "Keto Diet", "Low-Carbohydrate Diet"] },
+            { cn: "氢气", en: "Molecular Hydrogen", keywords: ["Hydrogen Gas", "Molecular Hydrogen"] },
+            { cn: "褪黑素", en: "Melatonin", keywords: ["Melatonin", "N-Acetyl-5-methoxytryptamine"] }
         ];
 
         const diseases = [
-            { cn: "新冠肺炎", en: "COVID-19", keyword: "COVID-19" },
-            { cn: "癌症", en: "Cancer", keyword: "Neoplasms" },
-            { cn: "阿尔茨海默症", en: "Alzheimer's", keyword: "Alzheimer Disease" },
-            { cn: "抑郁症", en: "Depression", keyword: "Depression" },
-            { cn: "2型糖尿病", en: "Type 2 Diabetes", keyword: "Diabetes Mellitus, Type 2" },
-            { cn: "肥胖", en: "Obesity", keyword: "Obesity" },
-            { cn: "衰老", en: "Aging", keyword: "Aging" },
-            { cn: "高血压", en: "Hypertension", keyword: "Hypertension" },
-            { cn: "自闭症", en: "Autism", keyword: "Autism Spectrum Disorder" },
-            { cn: "肠易激综合征", en: "IBS", keyword: "Irritable Bowel Syndrome" },
-            { cn: "勃起功能障碍", en: "Erectile Dysfunction", keyword: "Erectile Dysfunction" },
-            { cn: "脱发", en: "Hair Loss", keyword: "Alopecia" },
-            { cn: "失眠", en: "Insomnia", keyword: "Sleep Initiation and Maintenance Disorders" },
-            { cn: "炎症风暴", en: "Cytokine Storm", keyword: "Cytokine Release Syndrome" }
+            { cn: "新冠肺炎", en: "COVID-19", keywords: ["COVID-19", "SARS-CoV-2", "Coronavirus Infection"] },
+            { cn: "癌症", en: "Cancer", keywords: ["Neoplasms", "Cancer", "Tumors", "Malignancy"] },
+            { cn: "阿尔茨海默症", en: "Alzheimer's", keywords: ["Alzheimer Disease", "Dementia", "Amyloid", "Cognitive Decline"] },
+            { cn: "抑郁症", en: "Depression", keywords: ["Depression", "Depressive Disorder", "Mood Disorders"] },
+            { cn: "2型糖尿病", en: "Type 2 Diabetes", keywords: ["Diabetes Mellitus, Type 2", "Insulin Resistance", "Hyperglycemia"] },
+            { cn: "肥胖", en: "Obesity", keywords: ["Obesity", "Overweight", "Body Mass Index"] },
+            { cn: "衰老", en: "Aging", keywords: ["Aging", "Senescence", "Longevity", "Life Span"] },
+            { cn: "高血压", en: "Hypertension", keywords: ["Hypertension", "High Blood Pressure"] },
+            { cn: "自闭症", en: "Autism", keywords: ["Autism Spectrum Disorder", "ASD"] },
+            { cn: "肠易激综合征", en: "IBS", keywords: ["Irritable Bowel Syndrome", "IBS"] },
+            { cn: "勃起功能障碍", en: "Erectile Dysfunction", keywords: ["Erectile Dysfunction", "Sexual Dysfunction"] },
+            { cn: "脱发", en: "Hair Loss", keywords: ["Alopecia", "Hair Loss"] },
+            { cn: "失眠", en: "Insomnia", keywords: ["Sleep Initiation and Maintenance Disorders", "Insomnia", "Sleep Quality"] },
+            { cn: "炎症风暴", en: "Cytokine Storm", keywords: ["Cytokine Release Syndrome", "Hyperinflammation", "Cytokine Storm"] }
         ];
 
         const loadingPhrases = [
@@ -128,9 +128,12 @@
                 const sub = substances[finalLeft];
                 const dis = diseases[finalRight];
 
-                // 构建 PubMed 检索式
-                // 使用 Title/Abstract 限制，确保相关性看起来比较强，增加讽刺效果
-                const query = `("${sub.keyword}"[Title/Abstract]) AND ("${dis.keyword}"[Title/Abstract])`;
+                // 核心修改：生成包含 OR 逻辑的 PubMed 检索式
+                const subKeywords = sub.keywords.map(k => `${k}[Title/Abstract]`).join(" OR ");
+                const disKeywords = dis.keywords.map(k => `${k}[Title/Abstract]`).join(" OR ");
+                
+                // 组合查询：(成分关键词 OR ...)[TA] AND (疾病关键词 OR ...)[TA]
+                const query = `(${subKeywords}) AND (${disKeywords})`;
                 const url = `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(query)}&sort=date`;
 
                 setResult({
@@ -230,7 +233,7 @@
                                 </div>
 
                                 <div className="space-y-4">
-                                    <div className="text-sm text-slate-500 mono-font bg-slate-100 p-2 rounded overflow-x-auto whitespace-nowrap">
+                                    <div className="text-sm text-slate-500 mono-font bg-slate-100 p-2 rounded overflow-x-auto whitespace-normal break-all">
                                         Query: {result.query}
                                     </div>
                                     
